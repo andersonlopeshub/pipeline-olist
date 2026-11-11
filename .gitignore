@@ -1,0 +1,10 @@
+# Ambiente e caches
+.venv/
+__pycache__/
+.ruff_cache/
+.pytest_cache/
+
+# Gerados pelo pipeline e pelo relatório
+*.duckdb
+*.duckdb.wal
+relatorio.html
