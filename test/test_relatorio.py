@@ -132,10 +132,9 @@ def test_sem_banco_encerra_sem_gerar_arquivo(tmp_path, monkeypatch):
 
 
 def test_mart_faltando_encerra_sem_gerar_arquivo(tmp_path, monkeypatch):
-    # top_categorias e não mix_pagamento: um mart com o nome de uma função
-    # de painel.py cai no replacement scan do DuckDB e não chega ao
-    # sys.exit (limitação de painel.ler, registrada na entrega).
-    preparar(tmp_path, monkeypatch, sem="top_categorias")
+    # mix_pagamento tem o mesmo nome de uma função de painel.py: o caso que
+    # o replacement scan do DuckDB quebrava antes de chegar ao sys.exit.
+    preparar(tmp_path, monkeypatch, sem="mix_pagamento")
     with pytest.raises(SystemExit):
         relatorio.main()
     assert not (tmp_path / "relatorio.html").exists()

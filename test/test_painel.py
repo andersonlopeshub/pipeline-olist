@@ -129,6 +129,23 @@ def test_ler_deixa_de_fora_o_mart_que_nao_existe(tmp_path, monkeypatch):
     assert list(dados) == ["kpis"]
 
 
+def test_ler_deixa_de_fora_o_mart_com_nome_de_funcao_do_painel(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    criar_banco(tmp_path)
+    # Os três marts que têm o nome de uma função de painel.py.
+    dados = painel.ler(["kpis", "mix_pagamento", "clientes_por_uf", "nota_por_categoria"])
+    assert list(dados) == ["kpis"]
+
+
+def test_ler_nao_le_dataframe_python_com_o_nome_do_mart_que_falta(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    criar_banco(tmp_path)
+    # DataFrame com o nome do mart nos globais de painel.py, que é onde o
+    # replacement scan procura: o DuckDB não pode lê-lo no lugar do mart.
+    monkeypatch.setattr(painel, "impostor", pd.DataFrame({"x": [999]}), raising=False)
+    assert painel.ler(["impostor"]) == {}
+
+
 def test_ler_sem_banco_levanta_file_not_found_e_nao_cria_arquivo(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     with pytest.raises(FileNotFoundError):

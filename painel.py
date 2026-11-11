@@ -10,6 +10,12 @@ P1. LEITURA
     fechada dentro de ler().
     Por quê: conexão aberta segura o arquivo, e o pipeline.marts não
     consegue gravar com o painel de pé.
+    A conexão abre com python_enable_replacements desligado.
+    Por quê: ligado, o DuckDB procura uma variável Python com o nome da
+    tabela que falta, mesmo com o schema escrito. marts.mix_pagamento
+    ausente esbarrava na função painel.mix_pagamento e quebrava em vez de
+    cair na mensagem de mart faltando; um DataFrame com o mesmo nome seria
+    lido em silêncio no lugar do mart.
 
 P2. NENHUM CÁLCULO
     Proibido aqui e em app.py: agrupar, somar, tirar média, contar, juntar
@@ -131,7 +137,9 @@ def ler(marts: list[str]) -> dict[str, pd.DataFrame]:
     if not Path(BANCO).exists():
         raise FileNotFoundError(BANCO)
     dados: dict[str, pd.DataFrame] = {}
-    con = duckdb.connect(BANCO, read_only=True)
+    con = duckdb.connect(
+        BANCO, read_only=True, config={"python_enable_replacements": False}
+    )
     try:
         for nome in marts:
             try:
