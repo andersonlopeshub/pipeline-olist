@@ -12,5 +12,20 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
     "ruff>=0.17.3",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+pythonpath = ["."]
+
+[tool.coverage.run]
+source = ["."]
+omit = ["test/*", "app.py", "ui.py", ".venv/*"]
+# Fora da raiz: .pytest_cache/ já está no .gitignore.
+data_file = ".pytest_cache/.coverage"
+
+[tool.coverage.report]
+fail_under = 60
+show_missing = true
